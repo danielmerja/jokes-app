@@ -57,8 +57,8 @@ function JokeList() {
   };
 
   // Adjust these values to change tile size and spacing
-  const tileSize = 8; // Size of the tile in pixels
-  const tileSpacing = 2; // Space between tiles in pixels
+  const tileSize = 10; // Size of the tile in pixels
+  const tileSpacing = 3; // Space between tiles in pixels
 
   const columnWidth = tileSize + tileSpacing;
   const rowHeight = tileSize + tileSpacing;
@@ -96,7 +96,7 @@ function JokeList() {
       <Grid
         columnCount={columnCount}
         columnWidth={columnWidth}
-        height={windowHeight - 200} // Adjust based on your layout
+        height={windowHeight - 300} // Adjust based on your layout
         rowCount={rowCount}
         rowHeight={rowHeight}
         width={windowWidth}
