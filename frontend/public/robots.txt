@@ -1,0 +1,36 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /private
+
+# Sitemap
+Sitemap: https://www.worldsbestjokeapp.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 10
+
+# Specific page directives
+Allow: /jokes
+Allow: /categories
+Allow: /top-rated
+Allow: /submit-joke
+
+# Social media bots
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Optimize for Google
+User-agent: Googlebot
+Allow: /
+Allow: /*.js
+Allow: /*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.gif
+
+# Bing bot
+User-agent: bingbot
+Allow: /
