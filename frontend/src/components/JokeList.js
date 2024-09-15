@@ -23,7 +23,15 @@ function JokeList() {
   const fetchJokes = async () => {
     try {
       const response = await axios.get('/api/jokes');
-      setJokes(response.data);
+      const jokesData = response.data;
+
+      // Shuffle the jokes array
+      for (let i = jokesData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [jokesData[i], jokesData[j]] = [jokesData[j], jokesData[i]];
+      }
+
+      setJokes(jokesData);
     } catch (error) {
       console.error('Error fetching jokes:', error);
     }
@@ -52,8 +60,8 @@ function JokeList() {
   const tileSize = 8; // Size of the tile in pixels
   const tileSpacing = 2; // Space between tiles in pixels
 
-  const columnWidth = tileSize + tileSpacing; // Total width including spacing
-  const rowHeight = tileSize + tileSpacing; // Total height including spacing
+  const columnWidth = tileSize + tileSpacing;
+  const rowHeight = tileSize + tileSpacing;
 
   const columnCount = Math.floor(windowWidth / columnWidth);
   const rowCount = Math.ceil(jokes.length / columnCount);
@@ -70,10 +78,10 @@ function JokeList() {
         <div
           style={{
             ...style,
-            left: style.left + tileSpacing, // Adjust left position
-            top: style.top + tileSpacing, // Adjust top position
-            width: tileSize, // Set tile width
-            height: tileSize, // Set tile height
+            left: style.left + tileSpacing,
+            top: style.top + tileSpacing,
+            width: tileSize,
+            height: tileSize,
           }}
         >
           <Tile joke={joke} handleVote={handleVote} tileSize={tileSize} />
@@ -88,7 +96,7 @@ function JokeList() {
       <Grid
         columnCount={columnCount}
         columnWidth={columnWidth}
-        height={windowHeight - 200} // Adjust for header/footer
+        height={windowHeight - 200} // Adjust based on your layout
         rowCount={rowCount}
         rowHeight={rowHeight}
         width={windowWidth}
