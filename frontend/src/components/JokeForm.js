@@ -5,7 +5,7 @@ import axios from 'axios';
 function JokeForm() {
   const [content, setContent] = useState('');
 
-  const submitJoke = async e => {
+  const submitJoke = async (e) => {
     e.preventDefault();
     if (!content.trim()) return;
 
@@ -26,7 +26,7 @@ function JokeForm() {
           className="w-full h-24 p-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter your joke here..."
           value={content}
-          onChange={e => setContent(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
           required
           maxLength={280} // Added character limit
         ></textarea>
