@@ -66,6 +66,11 @@ function JokeList() {
   const columnCount = Math.floor(windowWidth / columnWidth);
   const rowCount = Math.ceil(jokes.length / columnCount);
 
+  // Calculate the maximum absolute vote count for dynamic scaling
+  const maxVotes = jokes.length
+    ? Math.max(...jokes.map((joke) => Math.abs(joke.votes)))
+    : 0;
+
   // Cell renderer
   const Cell = useCallback(
     ({ columnIndex, rowIndex, style }) => {
@@ -84,11 +89,16 @@ function JokeList() {
             height: tileSize,
           }}
         >
-          <Tile joke={joke} handleVote={handleVote} tileSize={tileSize} />
+          <Tile
+            joke={joke}
+            handleVote={handleVote}
+            tileSize={tileSize}
+            maxVotes={maxVotes}
+          />
         </div>
       );
     },
-    [jokes, handleVote, columnCount, tileSize, tileSpacing]
+    [jokes, handleVote, columnCount, tileSize, tileSpacing, maxVotes]
   );
 
   return (

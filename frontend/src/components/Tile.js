@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 
 // Tile component represents a single joke tile with voting functionality
-function Tile({ joke, handleVote, tileSize }) {
+function Tile({ joke, handleVote, tileSize, maxVotes }) {
   // Reference to the tile DOM element for position calculations
   const tileRef = useRef(null);
   
@@ -15,24 +15,37 @@ function Tile({ joke, handleVote, tileSize }) {
     transform: 'translateX(-50%)',
   });
 
-  // Maximum number of votes to determine color intensity
-  const maxVotes = 25; // Adjust based on expected maximum votes
-  
-  // Calculate green intensity for positive votes
-  const greenIntensity =
-    joke.votes > 0 ? Math.min((joke.votes / maxVotes) * 255, 255) : 0;
-  
-  // Calculate red intensity for negative votes
-  const redIntensity =
-    joke.votes < 0 ? Math.min((-joke.votes / maxVotes) * 255, 255) : 0;
-  
+  // Define minimum and maximum intensity for color scaling
+  const MIN_INTENSITY = 100; // Ensures noticeable color even for low votes
+  const MAX_INTENSITY = 255; // Maximum color intensity
+
+  // Avoid division by zero
+  const effectiveMaxVotes = maxVotes > 0 ? maxVotes : 1;
+
+  // Calculate color intensity based on votes
+  const calculateIntensity = (votes) => {
+    if (votes > 0) {
+      // Positive votes: Green
+      const intensity = Math.min(
+        Math.max((votes / effectiveMaxVotes) * (MAX_INTENSITY - MIN_INTENSITY) + MIN_INTENSITY, MIN_INTENSITY),
+        MAX_INTENSITY
+      );
+      return `rgb(0, ${Math.round(intensity)}, 0)`;
+    } else if (votes < 0) {
+      // Negative votes: Red
+      const intensity = Math.min(
+        Math.max((-votes / effectiveMaxVotes) * (MAX_INTENSITY - MIN_INTENSITY) + MIN_INTENSITY, MIN_INTENSITY),
+        MAX_INTENSITY
+      );
+      return `rgb(${Math.round(intensity)}, 0, 0)`;
+    } else {
+      // Zero votes: Grey
+      return 'rgb(200, 200, 200)';
+    }
+  };
+
   // Determine background color based on the number of votes
-  const backgroundColor =
-    joke.votes === 0
-      ? 'rgb(200, 200, 200)' // Grey color for zero votes
-      : joke.votes > 0
-      ? `rgb(0, ${greenIntensity}, 0)` // Increasing green intensity for positive votes
-      : `rgb(${redIntensity}, 0, 0)`; // Increasing red intensity for negative votes
+  const backgroundColor = calculateIntensity(joke.votes);
 
   // Handle mouse enter event on the tile
   const handleTileMouseEnter = () => {
@@ -92,7 +105,7 @@ function Tile({ joke, handleVote, tileSize }) {
       {/* Hover content container */}
       {isHovering && (
         <div
-          className="absolute z-10"
+          className="absolute z-10 transition-opacity duration-200"
           style={{
             top: '100%', // Position below the tile
             left: hoverPosition.left, // Dynamic left position
