@@ -19,6 +19,7 @@ function useWindowSize() {
 function JokeList() {
   const [jokes, setJokes] = useState([]);
   const [windowWidth, windowHeight] = useWindowSize();
+  const [activeJokeId, setActiveJokeId] = useState(null); // State for active hover card
 
   const fetchJokes = async () => {
     try {
@@ -94,11 +95,13 @@ function JokeList() {
             handleVote={handleVote}
             tileSize={tileSize}
             maxVotes={maxVotes}
+            isActive={activeJokeId === joke.id} // Determine if this tile's hover card is active
+            setActiveJokeId={setActiveJokeId} // Pass setter to control active hover card
           />
         </div>
       );
     },
-    [jokes, handleVote, columnCount, tileSize, tileSpacing, maxVotes]
+    [jokes, handleVote, columnCount, tileSize, tileSpacing, maxVotes, activeJokeId]
   );
 
   return (

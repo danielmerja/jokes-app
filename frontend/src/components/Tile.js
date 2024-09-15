@@ -1,13 +1,9 @@
 // src/components/Tile.js
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-// Tile component represents a single joke tile with voting functionality
-function Tile({ joke, handleVote, tileSize, maxVotes }) {
+function Tile({ joke, handleVote, tileSize, maxVotes, isActive, setActiveJokeId }) {
   // Reference to the tile DOM element for position calculations
   const tileRef = useRef(null);
-  
-  // State to manage hover card visibility
-  const [isHovering, setIsHovering] = useState(false);
 
   // State to manage the position of the hover tooltip
   const [hoverPosition, setHoverPosition] = useState({
@@ -47,12 +43,42 @@ function Tile({ joke, handleVote, tileSize, maxVotes }) {
   // Determine background color based on the number of votes
   const backgroundColor = calculateIntensity(joke.votes);
 
-  // Handle mouse enter event on the tile
-  const handleTileMouseEnter = () => {
+  // Handle click event to toggle hover card
+  const handleClick = () => {
+    if (isActive) {
+      setActiveJokeId(null); // Close if already active
+    } else {
+      setActiveJokeId(joke.id); // Open this hover card
+    }
+  };
+
+  // Close the hover card when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        tileRef.current &&
+        !tileRef.current.contains(event.target)
+      ) {
+        setActiveJokeId(null);
+      }
+    };
+
+    if (isActive) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isActive, setActiveJokeId]);
+
+  // Calculate hover card position on mount and when active
+  useEffect(() => {
     if (tileRef.current) {
       const rect = tileRef.current.getBoundingClientRect();
-      const viewportWidth =
-        window.innerWidth || document.documentElement.clientWidth;
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 
       // Default tooltip position
       let left = '50%';
@@ -71,39 +97,34 @@ function Tile({ joke, handleVote, tileSize, maxVotes }) {
       // Update the hover position state with new values
       setHoverPosition({ left, transform });
     }
-    setIsHovering(true);
-  };
-
-  // Handle mouse leave event on the tile
-  const handleTileMouseLeave = () => {
-    setIsHovering(false);
-  };
-
-  // Handle mouse enter event on the hover card
-  const handleHoverCardMouseEnter = () => {
-    setIsHovering(true);
-  };
-
-  // Handle mouse leave event on the hover card
-  const handleHoverCardMouseLeave = () => {
-    setIsHovering(false);
-  };
+  }, [isActive]);
 
   return (
     <div
       ref={tileRef} // Attach the ref to the tile div
-      onMouseEnter={handleTileMouseEnter} // Attach mouse enter handler
-      onMouseLeave={handleTileMouseLeave} // Attach mouse leave handler
+      onClick={handleClick} // Attach click handler
       style={{
         width: `${tileSize}px`, // Set tile width based on prop
         height: `${tileSize}px`, // Set tile height based on prop
         backgroundColor: backgroundColor, // Apply dynamic background color
         position: 'relative', // Relative positioning for absolute children
+        cursor: 'pointer', // Change cursor to pointer
+        transition: 'background-color 0.3s ease', // Smooth color transition
       }}
-      className="group cursor-pointer transition-colors" // Tailwind CSS classes for styling
+      className="group transition-colors" // Tailwind CSS classes for styling
+      role="button" // Accessibility role
+      aria-haspopup="true" // Indicates that the tile has a popup
+      aria-expanded={isActive} // Indicates whether the popup is open
+      tabIndex={0} // Make the tile focusable
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       {/* Hover content container */}
-      {isHovering && (
+      {isActive && (
         <div
           className="absolute z-10 transition-opacity duration-200"
           style={{
@@ -112,9 +133,8 @@ function Tile({ joke, handleVote, tileSize, maxVotes }) {
             transform: hoverPosition.transform, // Dynamic transform
             width: '300px', // Fixed width for tooltip
             marginTop: '8px', // Spacing above tooltip
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow
           }}
-          onMouseEnter={handleHoverCardMouseEnter} // Keep hover state when entering hover card
-          onMouseLeave={handleHoverCardMouseLeave} // Remove hover state when leaving hover card
         >
           <div className="bg-white p-4 rounded shadow-lg">
             {/* Display the joke content */}
