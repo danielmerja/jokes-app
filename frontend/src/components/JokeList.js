@@ -109,7 +109,7 @@ function JokeList() {
       <Grid
         columnCount={columnCount}
         columnWidth={columnWidth}
-        height={windowHeight - 300} // Adjust based on your layout
+        height={windowHeight - 400} // Adjust based on your layout
         rowCount={rowCount}
         rowHeight={rowHeight}
         width={windowWidth}
