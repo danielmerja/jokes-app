@@ -1,8 +1,8 @@
 // src/components/JokeForm.js
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axiosInstance';
 
-function JokeForm() {
+function JokeForm({ handleSubmitJoke }) {
   const [content, setContent] = useState('');
 
   const submitJoke = async (e) => {
@@ -10,11 +10,11 @@ function JokeForm() {
     if (!content.trim()) return;
 
     try {
-      await axios.post('/api/jokes', { content });
+      await handleSubmitJoke(content.trim());
       setContent('');
-      window.location.reload(); // Simple way to refresh jokes
     } catch (error) {
       console.error('Error submitting joke:', error);
+      alert('An error occurred while submitting your joke.');
     }
   };
 

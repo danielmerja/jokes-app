@@ -1,7 +1,7 @@
 // src/components/JokeList.js
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { FixedSizeGrid as Grid } from 'react-window';
+import axios from '../api/axiosInstance';
 import Tile from './Tile';
 
 function useWindowSize() {
@@ -16,46 +16,9 @@ function useWindowSize() {
   return size;
 }
 
-function JokeList() {
-  const [jokes, setJokes] = useState([]);
+function JokeList({ jokes, handleVote }) {
   const [windowWidth, windowHeight] = useWindowSize();
   const [activeJokeId, setActiveJokeId] = useState(null); // State for active hover card
-
-  const fetchJokes = async () => {
-    try {
-      const response = await axios.get('/api/jokes');
-      const jokesData = response.data;
-
-      // Shuffle the jokes array
-      for (let i = jokesData.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [jokesData[i], jokesData[j]] = [jokesData[j], jokesData[i]];
-      }
-
-      setJokes(jokesData);
-    } catch (error) {
-      console.error('Error fetching jokes:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchJokes();
-  }, []);
-
-  const handleVote = async (id, action) => {
-    try {
-      await axios.post(`/api/jokes/${id}/vote`, { action });
-      setJokes((prevJokes) =>
-        prevJokes.map((joke) =>
-          joke.id === id
-            ? { ...joke, votes: joke.votes + (action === 'upvote' ? 1 : -1) }
-            : joke
-        )
-      );
-    } catch (error) {
-      console.error('Error voting:', error);
-    }
-  };
 
   // Adjust these values to change tile size and spacing
   const tileSize = 10; // Size of the tile in pixels
@@ -64,7 +27,7 @@ function JokeList() {
   const columnWidth = tileSize + tileSpacing;
   const rowHeight = tileSize + tileSpacing;
 
-  const columnCount = Math.floor(windowWidth / columnWidth);
+  const columnCount = Math.floor(windowWidth / columnWidth) || 1; // Prevent division by zero
   const rowCount = Math.ceil(jokes.length / columnCount);
 
   // Calculate the maximum absolute vote count for dynamic scaling
@@ -109,7 +72,7 @@ function JokeList() {
       <Grid
         columnCount={columnCount}
         columnWidth={columnWidth}
-        height={windowHeight - 400} // Adjust based on your layout
+        height={windowHeight - 300} // Adjust based on your layout
         rowCount={rowCount}
         rowHeight={rowHeight}
         width={windowWidth}

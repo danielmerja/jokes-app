@@ -1,6 +1,6 @@
 // src/App.js
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import axios from './api/axiosInstance';
 import Header from './components/Header';
 import JokeList from './components/JokeList';
 import JokeForm from './components/JokeForm';
@@ -11,7 +11,7 @@ function App() {
   // Fetch jokes from the API
   const fetchJokes = async () => {
     try {
-      const response = await axios.get('/api/jokes');
+      const response = await axios.get('/jokes');
       const jokesData = response.data;
 
       // Shuffle the jokes array
@@ -22,7 +22,12 @@ function App() {
 
       setJokes(jokesData);
     } catch (error) {
-      console.error('Error fetching jokes:', error);
+      if (error.response && error.response.status === 429) {
+        alert('You are making requests too quickly. Please try again later.');
+      } else {
+        console.error('Error fetching jokes:', error);
+        alert('An error occurred while fetching jokes.');
+      }
     }
   };
 
@@ -33,7 +38,7 @@ function App() {
   // Handle voting (upvote or downvote)
   const handleVote = async (id, action) => {
     try {
-      await axios.post(`/api/jokes/${id}/vote`, { action });
+      await axios.post(`/jokes/${id}/vote`, { action });
       setJokes((prevJokes) =>
         prevJokes.map((joke) =>
           joke.id === id
@@ -42,18 +47,28 @@ function App() {
         )
       );
     } catch (error) {
-      console.error('Error voting:', error);
+      if (error.response && error.response.status === 429) {
+        alert('You are making requests too quickly. Please try again later.');
+      } else {
+        console.error('Error voting:', error);
+        alert('An error occurred while voting.');
+      }
     }
   };
 
   // Handle submitting a new joke
   const handleSubmitJoke = async (content) => {
     try {
-      const response = await axios.post('/api/jokes', { content });
+      const response = await axios.post('/jokes', { content });
       const newJoke = response.data;
       setJokes((prevJokes) => [newJoke, ...prevJokes]);
     } catch (error) {
-      console.error('Error submitting joke:', error);
+      if (error.response && error.response.status === 429) {
+        alert('You are making requests too quickly. Please try again later.');
+      } else {
+        console.error('Error submitting joke:', error);
+        alert('An error occurred while submitting your joke.');
+      }
     }
   };
 
