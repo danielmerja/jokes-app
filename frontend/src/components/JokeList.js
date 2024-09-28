@@ -72,7 +72,7 @@ function JokeList({ jokes, handleVote }) {
       <Grid
         columnCount={columnCount}
         columnWidth={columnWidth}
-        height={windowHeight - 300} // Adjust based on your layout
+        height={windowHeight - 450} // Adjust based on your layout
         rowCount={rowCount}
         rowHeight={rowHeight}
         width={windowWidth}

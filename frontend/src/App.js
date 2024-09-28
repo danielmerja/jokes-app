@@ -4,6 +4,7 @@ import axios from './api/axiosInstance';
 import Header from './components/Header';
 import JokeList from './components/JokeList';
 import JokeForm from './components/JokeForm';
+import Chat from './components/Chat'; // Ensure Chat component is imported
 
 function App() {
   const [jokes, setJokes] = useState([]);
@@ -77,9 +78,15 @@ function App() {
       {/* Header Component */}
       <Header totalJokes={jokes.length} />
 
-      {/* JokeList component fills the available space */}
-      <div className="flex-grow">
-        <JokeList jokes={jokes} handleVote={handleVote} />
+      {/* Main Content with JokeList and Chat Panel */}
+      <div className="flex flex-grow overflow-hidden">
+        {/* JokeList component */}
+        <div className="flex-grow overflow-auto">
+          <JokeList jokes={jokes} handleVote={handleVote} />
+        </div>
+
+        {/* Chat Panel */}
+        <Chat />
       </div>
 
       {/* JokeForm component at the bottom */}
